@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="888888" name="app-key"/>
+    <title>股票估值计算器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <style>
+        .header { text-align: center; margin: 1rem 0 -3rem; }
+        .logo-container { display: flex; align-items: center; justify-content: center; gap: 0.1rem; flex-wrap: wrap; margin-left: -150px; }
+        .app-title { font-size: 2.5rem; font-weight: 700; color: #2c3e50; margin: 0 0 0 -80px; line-height: 1.2; }
+        .logo { height: 190px; width: auto; display: block; margin-bottom: -10px; }
+        .calculator { max-width: 800px; margin: 2rem auto; padding: 2rem; border: 1px solid #dee2e6; border-radius: 15px; }
+        .disabled-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 999; display: none; }
+        .growth-input { position: relative; }
+        .growth-input::after { content: "%"; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; pointer-events: none; }
+        #recordCardsContainer { background-color: white; padding: 20px; }
+        .card.shadow { box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; }
+        #stockContent > div { width: 300px; margin: 10px; padding: 15px; box-sizing: border-box; }
+        @media (max-width: 768px) {
+            .app-title { font-size: 2rem; }
+            .logo { height: 150px; }
+            .calculator { padding: 1.5rem; margin: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<body oncontextmenu="return false;" onselectstart="return false;">
+    <div class="disabled-overlay" id="lockOverlay">
+        <div class="position-absolute top-50 start-50 translate-middle">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3" id="unlockTitle">需要解锁使用</h5>
+                    <div class="input-group mb-3">
+                        <input class="form-control" id="inputKey" placeholder="请输入访问密钥" type="password"/>
+                        <button class="btn btn-outline-secondary" onclick="toggleKeyVisibility(this)">👁️</button>
+                        <button class="btn btn-primary" onclick="unlockCalculator()">解锁</button>
+                    </div>
+                    <p class="text-danger small mb-0" id="keyError" style="display:none;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="keyManagerModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="keyManagerTitle">密钥管理</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">当前密钥</label>
+                        <input class="form-control" disabled id="currentKey" type="password"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">新密钥（至少6位）</label>
+                        <input class="form-control" id="newKey" type="password"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">确认新密钥</label>
+                        <input class="form-control" id="confirmKey" type="password"/>
+                    </div>
+                    <p class="text-danger small" id="keyChangeError" style="display:none;"></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">取消</button>
+                    <button class="btn btn-primary" onclick="updateKey()" type="button">保存更改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img alt="Logo" class="logo" src="https://i.imgur.com/naIXUw2.png"/>
+                <h1 class="app-title">股票估值计算器</h1>
+            </div>
+        </header>
+        <div class="calculator">
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label" id="languageLabel">Language</label>
+                    <select class="form-select" id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" id="marketLabel">Market</label>
+                    <select class="form-select" id="countrySelect">
+                        <option value="CHINA">中国 (¥)</option>
+                        <option value="HK">香港 (HK$)</option>
+                        <option value="US">美国 ($)</option>
+                        <option value="MY">马来西亚 (RM)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label" id="stockNameLabel">Stock Name</label>
+                <input class="form-control" disabled id="stockName" required type="text"/>
+                <label class="form-label mt-2" id="currentPriceLabel">当前股价</label>
+                <input class="form-control" disabled id="currentPrice" min="0.01" required step="0.01" type="number"/>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label" id="quarterRevenueLabel">季度收入（百万）</label>
+                    <input class="form-control" disabled id="quarterRevenue" min="0.01" required step="0.01" type="number"/>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" id="quarterProfitLabel">季度利润（百万）</label>
+                    <input class="form-control" disabled id="quarterProfit" min="0.01" required step="0.01" type="number"/>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" id="totalSharesLabel">总股本（百万股）</label>
+                    <input class="form-control" disabled id="totalShares" min="1" required type="number"/>
+                </div>
+                <div class="col-md-3 growth-input">
+                    <label class="form-label" id="growthLabel">预期成长值%</label>
+                    <input class="form-control" disabled id="growthRate" max="100" min="0" required step="0.1" type="number" value="0"/>
+                </div>
+            </div>
+            <button class="btn btn-primary w-100 mb-4" disabled id="calculateButton">Calculate & Save</button>
+            <div class="mt-4 p-3 bg-light rounded" id="result" style="display: none;">
+                <h5 id="resultTitle"></h5>
+                <p class="fs-4 text-primary" id="resultPrice"></p>
+                <p class="text-muted small mt-3" id="disclaimerText"></p>
+            </div>
+            <div class="history mt-5">
+                <h5 class="mb-3" id="historyTitle">Saved Records</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th id="marketColumn">Market</th>
+                                <th id="stockColumn">Stock</th>
+                                <th id="currentPriceColumn">Current Price</th>
+<th id="priceColumn">Price</th>
+                                <th id="timeColumn">Time</th>
+                                <th id="actionColumn">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-success w-100 mb-4" onclick="generateAllRecordCards()">一键生成所有保存卡片 Generate all saved cards</button>
+        <button class="btn btn-danger w-100 mb-4" onclick="downloadPDF()">下载PDF报告 Download PDF</button>
+        <div class="mt-4" id="recordCardsContainer"></div>
+    </div>
+    <script>
+        const translations = {
+            zh: {
+                title: "股票估值计算器",
+                unlockTitle: "解锁使用",
+                keyManagerTitle: "密钥管理",
+                marketLabel: "选择市场",
+                stockNameLabel: "股票名称",
+                quarterRevenueLabel: "季度收入（百万）",
+                quarterProfitLabel: "季度利润（百万）",
+                totalSharesLabel: "总股本（百万股）",
+                growthLabel: "预期成长值%",
+                calculateButton: "计算并保存",
+                resultTitle: "计算结果：",
+                fairPrice: "合理股价：",
+                disclaimer: "免责声明：计算结果仅供参考，不构成投资建议",
+                growthNote: "（已包含{value}%的预期成长调整）",
+                historyTitle: "保存记录",
+                marketColumn: "市场",
+                stockColumn: "股票名称",
+                priceColumn: "合理股价",
+                currentPriceColumn: "当前股价",
+                timeColumn: "计算时间",
+                actionColumn: "操作",
+                deleteButton: "删除",
+                errorInvalidInput: "请填写完整有效的输入值",
+                errorNegativeProfit: "净利润率不能为负数",
+                errorStockName: "股票名称不能为空",
+                errorRevenue: "季度收入必须是有效数字",
+                errorProfit: "季度利润必须是有效数字",
+                errorShares: "总股本必须是大于零的数字",
+                growthError: "成长值必须在0-100%之间",
+                keyMismatch: "两次输入的密钥不一致",
+                keyTooShort: "密钥长度不能少于6位",
+                keyUpdated: "密钥已更新，请重新解锁！",
+                errorNoRecords: "请先生成卡片再下载",
+                currentPriceLabel: "当前股价",
+                currentPrice: "当前股价",
+                premiumRate: "溢价率",
+                errorCurrentPrice: "当前股价必须为有效正数"
+
+            },
+            en: {
+                title: "Stock Value Calculator",
+                unlockTitle: "Unlock Required",
+                keyManagerTitle: "Key Management",
+                marketLabel: "Market",
+                stockNameLabel: "Stock Name",
+                quarterRevenueLabel: "Quarterly Rev (Mil)",
+                quarterProfitLabel: "Quarterly Profit (Mil)",
+                totalSharesLabel: "Total Shares (Mil)",
+                growthLabel: "Growth Rate%",
+                calculateButton: "Calculate & Save",
+                resultTitle: "Result: ",
+                fairPrice: "Fair Price: ",
+                disclaimer: "Disclaimer: Results are for reference only and do not constitute investment advice. ",
+                growthNote: "(Applied {value}% growth adjustment)",
+                historyTitle: "History Records",
+                marketColumn: "Market",
+                stockColumn: "Stock",
+                priceColumn: "Fair Price",
+                currentPriceColumn: "Current Price",
+                timeColumn: "Time",
+                actionColumn: "Action",
+                deleteButton: "Delete",
+                errorInvalidInput: "Invalid input values",
+                errorNegativeProfit: "Negative profit not allowed",
+                errorStockName: "Stock name cannot be empty",
+                errorRevenue: "Invalid revenue value",
+                errorProfit: "Invalid profit value",
+                errorShares: "Shares must be greater than zero",
+                growthError: "Growth rate must be 0-100%",
+                keyMismatch: "Keys do not match",
+                keyTooShort: "Key must be at least 6 characters",
+                keyUpdated: "Key updated! Please re-authenticate.",
+                errorNoRecords: "Please generate cards first",
+                currentPriceLabel: "Current Price",
+                currentPrice: "Current Price",
+                premiumRate: "Premium Rate",
+                errorCurrentPrice: "Current price must be a valid positive number"
+            }
+        };
+
+        let isLocked = true;
+
+        function initKey() {
+            const metaKey = document.querySelector('meta[name="app-key"]');
+            if (metaKey && metaKey.content) {
+                localStorage.setItem('appKey', metaKey.content);
+                console.log('初始化密钥: 从meta标签设置', metaKey.content);
+            } else {
+                console.log('初始化密钥失败: meta标签未找到或无内容');
+            }
+            console.log('当前localStorage中的appKey:', localStorage.getItem('appKey'));
+        }
+
+        function toggleKeyVisibility(btn) {
+            const input = btn.previousElementSibling;
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function unlockCalculator() {
+            const inputKey = document.getElementById('inputKey').value;
+            const savedKey = localStorage.getItem('appKey');
+            const lang = document.getElementById('languageSelect').value;
+            
+            console.log('输入的密钥:', inputKey);
+            console.log('保存的密钥:', savedKey);
+            
+            if (inputKey === savedKey) {
+                console.log('密钥匹配，解锁计算器');
+                isLocked = false;
+                document.getElementById('lockOverlay').style.display = 'none';
+                enableCalculator(true);
+            } else {
+                console.log('密钥不匹配，显示错误');
+                showMessage('keyError', translations[lang].errorInvalidInput);
+            }
+        }
+
+        function showKeyManager() {
+            if (!isLocked) {
+                const currentKey = localStorage.getItem('appKey');
+                document.getElementById('currentKey').value = currentKey;
+                new bootstrap.Modal('#keyManagerModal').show();
+            }
+        }
+
+        function updateKey() {
+            const newKey = document.getElementById('newKey').value;
+            const confirmKey = document.getElementById('confirmKey').value;
+            const lang = document.getElementById('languageSelect').value;
+
+            if (newKey !== confirmKey) {
+                showMessage('keyChangeError', translations[lang].keyMismatch);
+                return;
+            }
+            if (newKey.length < 6) {
+                showMessage('keyChangeError', translations[lang].keyTooShort);
+                return;
+            }
+
+            localStorage.setItem('appKey', newKey);
+            new bootstrap.Modal('#keyManagerModal').hide();
+            alert(translations[lang].keyUpdated);
+            lockCalculator();
+        }
+
+        function showMessage(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 2000);
+        }
+
+        (function(_0x27a77d,_0x45caba){const _0x3c67b9=_0x4ca5,_0x548acd=_0x27a77d();while(!![]){try{const _0x20b7f0=-parseInt(_0x3c67b9(0x1b5))/0x1+parseInt(_0x3c67b9(0x1e6))/0x2*(-parseInt(_0x3c67b9(0x176))/0x3)+parseInt(_0x3c67b9(0x187))/0x4+-parseInt(_0x3c67b9(0x17d))/0x5+parseInt(_0x3c67b9(0x1e9))/0x6+-parseInt(_0x3c67b9(0x196))/0x7+parseInt(_0x3c67b9(0x19e))/0x8;if(_0x20b7f0===_0x45caba)break;else _0x548acd['push'](_0x548acd['shift']());}catch(_0x46ee1b){_0x548acd['push'](_0x548acd['shift']());}}}(_0x59d4,0x80fa3));function _0x59d4(){const _0x25bdd4=['placeholder','\x0a\x0a•\x20','createElement','block','PNG','errorNoRecords','Running\x20html2canvas...','toLocaleString','getElementById','942959tVTrbj','marketColumn','Image\x20data\x20created:','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mb-1\x22><strong>','children','#calculateButton','getImageProperties','click','timeColumn','push','quarterProfit','已禁用','errorStockName','disclaimer','stockColumn','splice','</h2>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-center\x20mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-muted\x20small\x20mb-0\x22\x20style=\x22font-size:\x200.9rem;\x22>','getWidth','setItem','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','Starting\x20PDF\x20download...','addEventListener','name','addImage','%)</small></p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mb-1\x22><small>','disabled','html2canvas','premium','\x20<small\x20class=\x22','countrySelect','price','resultPrice','stockHistory','timestamp','PDF\x20saved','PDF生成失败，请重试','currentPrice','title','\x0a•\x20','languageSelect','stockName','deleteButton','div','#languageSelect','join','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22d-flex\x20align-items-center\x20mb-8\x22\x20style=\x22margin-left:\x2016rem;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22https://i.imgur.com/naIXUw2.png\x22\x20alt=\x22Logo\x22\x20style=\x22width:\x20400px;\x20height:\x20auto;\x20margin-right:\x20-7rem;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h2\x20style=\x22font-size:\x202.5rem;\x22>','errorRevenue','recordCardsContainer','priceColumn','210fsYlVa','totalShares','html2canvas:','186888PbdkIG','country','border\x20p-3\x20m-2\x20rounded\x20flex-grow-1','length','round','PDF\x20generation\x20failed:','errorProfit','height',':</strong>\x20','#totalShares','#quarterRevenue','3495WlvJMu','</p>\x0a<p\x20class=\x22mb-1\x22><strong>','change','resultTitle','errorNegativeProfit','slice','image/png','4139440dpKPke','width','forEach','#countrySelect','className','display','#quarterProfit','请输入访问密钥','value','Container\x20children:','4183752hGrHvn','log','error','innerHTML','textContent','lockOverlay','quarterRevenue','jspdf','errorCurrentPrice','calculateButton','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22d-flex\x20flex-wrap\x22\x20id=\x22stockContent\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','growthRate','querySelector','style','text-danger','7060466cJLmJJ',')\x22>','appendChild','toFixed','growthError','#growthRate','HK$','Image\x20added\x20to\x20PDF','18824120xFiFjd','errorShares','disclaimerText','</button></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','#currentPrice','historyTable','stringify','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td><button\x20class=\x22btn\x20btn-sm\x20btn-danger\x22\x20onclick=\x22deleteRecord(','errorInvalidInput','parse','text-success','\x22>(','计算器状态:','getItem'];_0x59d4=function(){return _0x25bdd4;};return _0x59d4();}function lockCalculator(){const _0x4a67bf=_0x4ca5;isLocked=!![],document[_0x4a67bf(0x1b4)](_0x4a67bf(0x18c))[_0x4a67bf(0x194)][_0x4a67bf(0x182)]=_0x4a67bf(0x1af),enableCalculator(![]);}function enableCalculator(_0x185649){const _0x225974=_0x4ca5,_0x424f48=['#stockName',_0x225974(0x1a2),_0x225974(0x175),_0x225974(0x183),_0x225974(0x174),_0x225974(0x1ba),_0x225974(0x1e0),_0x225974(0x180),_0x225974(0x19b)];_0x424f48[_0x225974(0x17f)](_0x42578f=>{const _0x4833ef=_0x225974;document[_0x4833ef(0x193)](_0x42578f)[_0x4833ef(0x1ce)]=!_0x185649;}),console[_0x225974(0x188)](_0x225974(0x1aa),_0x185649?'已启用':_0x225974(0x1c0));}function calculate(){const _0x5986eb=_0x4ca5,_0x64279a=document[_0x5986eb(0x1b4)](_0x5986eb(0x1dc))[_0x5986eb(0x185)],_0x5b91a1=document[_0x5986eb(0x1b4)](_0x5986eb(0x1d2))[_0x5986eb(0x185)],_0x3a1f67=document['getElementById'](_0x5986eb(0x1dd))['value']['trim'](),_0x33bf40=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x1d9))[_0x5986eb(0x185)]),_0x919931=parseFloat(document['getElementById'](_0x5986eb(0x18d))['value']),_0x2c46e8=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x1bf))['value']),_0xaec918=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x1e7))[_0x5986eb(0x185)]),_0x4801a6=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x192))[_0x5986eb(0x185)]);if(!validateInputs(_0x64279a,_0x3a1f67,_0x33bf40,_0x919931,_0x2c46e8,_0xaec918,_0x4801a6))return;const _0x4b0b11=Math[_0x5986eb(0x1ed)](_0x2c46e8/_0x919931*0x64);if(_0x4b0b11<0x0){alert(translations[_0x64279a][_0x5986eb(0x17a)]);return;}const _0xa3dec7=_0x4b0b11*0.2,_0x3386cd=_0x919931*0x4,_0x29a37f=_0x3386cd*_0xa3dec7/_0xaec918;let _0x255fca=_0x29a37f*(0x1+_0x4801a6/0x64);if(_0xaec918<0x1f4)_0x255fca*=0.8;else{if(_0xaec918<0x3e8)_0x255fca*=0.9;}_0x255fca=Math['max'](0x0,_0x255fca);const _0x2996f5={'CHINA':'¥','HK':_0x5986eb(0x19c),'US':'$','MY':'RM'}[_0x5b91a1];showResult(_0x64279a,_0x3a1f67,_0x2996f5,_0x255fca,_0x4801a6),saveRecord(_0x5b91a1,_0x3a1f67,_0x255fca,_0x33bf40,_0x4801a6),loadHistory();}function validateInputs(_0x34bd67,_0xfe5224,_0x3c2045,_0x4d83c3,_0x229b29,_0x3df86c,_0x1b26d4){const _0x15fab4=_0x4ca5,_0x5dea53=[];if(!_0xfe5224)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x1c1)]);if(isNaN(_0x3c2045)||_0x3c2045<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x18f)]);if(isNaN(_0x4d83c3)||_0x4d83c3<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x1e3)]);if(isNaN(_0x229b29)||_0x229b29<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x1ef)]);if(isNaN(_0x3df86c)||_0x3df86c<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x19f)]);if(isNaN(_0x1b26d4)||_0x1b26d4<0x0||_0x1b26d4>0x64)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x19a)]);if(_0x5dea53['length']>0x0)return alert(translations[_0x34bd67][_0x15fab4(0x1a6)]+_0x15fab4(0x1ad)+_0x5dea53[_0x15fab4(0x1e1)](_0x15fab4(0x1db))),![];return!![];}function showResult(_0x42d29c,_0x375bd4,_0xcb158,_0x261f3c,_0x27dd2b){const _0x484c7f=_0x4ca5,_0x25199b=document[_0x484c7f(0x1b4)]('result');_0x25199b[_0x484c7f(0x194)]['display']='block',document[_0x484c7f(0x1b4)](_0x484c7f(0x179))[_0x484c7f(0x18b)]=translations[_0x42d29c][_0x484c7f(0x179)]+'\x20'+_0x375bd4,document[_0x484c7f(0x1b4)](_0x484c7f(0x1d4))['textContent']=translations[_0x42d29c]['fairPrice']+'\x20'+_0xcb158+'\x20'+_0x261f3c[_0x484c7f(0x199)](0x2),document['getElementById'](_0x484c7f(0x1a0))[_0x484c7f(0x18b)]=translations[_0x42d29c][_0x484c7f(0x1c2)];}function saveRecord(_0x3ef38d,_0x4a8999,_0xa59e4d,_0x2f28b7,_0x4c1055){const _0xd59378=_0x4ca5,_0x117269=((_0xa59e4d-_0x2f28b7)/_0x2f28b7*0x64)[_0xd59378(0x199)](0x1),_0x4b61fd={'country':_0x3ef38d,'name':_0x4a8999,'price':_0xa59e4d['toFixed'](0x2),'currentPrice':_0x2f28b7[_0xd59378(0x199)](0x2),'growth':_0x4c1055[_0xd59378(0x199)](0x1),'premium':_0x117269,'timestamp':new Date()[_0xd59378(0x1b3)]()};let _0x59dcd9=JSON[_0xd59378(0x1a7)](localStorage[_0xd59378(0x1ab)](_0xd59378(0x1d5))||'[]');_0x59dcd9=_0x59dcd9[_0xd59378(0x17b)](-0x31),_0x59dcd9['push'](_0x4b61fd),localStorage[_0xd59378(0x1c7)](_0xd59378(0x1d5),JSON[_0xd59378(0x1a4)](_0x59dcd9));}function loadHistory(){const _0x3b5335=_0x4ca5,_0x1ceec6=document[_0x3b5335(0x1b4)](_0x3b5335(0x1dc))[_0x3b5335(0x185)],_0x3ac07b=JSON[_0x3b5335(0x1a7)](localStorage[_0x3b5335(0x1ab)](_0x3b5335(0x1d5))||'[]'),_0x286809=document['getElementById'](_0x3b5335(0x1a3));_0x286809['innerHTML']=_0x3ac07b['map']((_0x2bd25d,_0x3b6368)=>'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x2bd25d['country']+_0x3b5335(0x1c8)+_0x2bd25d[_0x3b5335(0x1cb)]+_0x3b5335(0x1c8)+getCurrencySymbol(_0x2bd25d[_0x3b5335(0x1ea)])+'\x20'+_0x2bd25d[_0x3b5335(0x1d9)]+'</td>\x0a<td>'+getCurrencySymbol(_0x2bd25d[_0x3b5335(0x1ea)])+'\x20'+_0x2bd25d[_0x3b5335(0x1d3)]+'<small\x20class=\x22'+(_0x2bd25d[_0x3b5335(0x1d0)]>=0x0?_0x3b5335(0x1a8):_0x3b5335(0x195))+_0x3b5335(0x1a9)+_0x2bd25d['premium']+'%)</small></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x2bd25d[_0x3b5335(0x1d6)]+_0x3b5335(0x1a5)+_0x3b6368+_0x3b5335(0x197)+translations[_0x1ceec6][_0x3b5335(0x1de)]+_0x3b5335(0x1a1))['join']('');}function _0x4ca5(_0x3ed669,_0x370c17){const _0x59d495=_0x59d4();return _0x4ca5=function(_0x4ca580,_0x4444d0){_0x4ca580=_0x4ca580-0x174;let _0x4eb2bb=_0x59d495[_0x4ca580];return _0x4eb2bb;},_0x4ca5(_0x3ed669,_0x370c17);}function deleteRecord(_0x26c26a){const _0x113538=_0x4ca5;let _0x106778=JSON[_0x113538(0x1a7)](localStorage[_0x113538(0x1ab)](_0x113538(0x1d5))||'[]');_0x106778[_0x113538(0x1c4)](_0x26c26a,0x1),localStorage[_0x113538(0x1c7)](_0x113538(0x1d5),JSON['stringify'](_0x106778)),loadHistory();}function getCurrencySymbol(_0x2264ce){return{'CHINA':'¥','HK':'HK$','US':'$','MY':'RM'}[_0x2264ce];}function generateAllRecordCards(){const _0x386fc7=_0x4ca5,_0x5b7703=JSON[_0x386fc7(0x1a7)](localStorage[_0x386fc7(0x1ab)](_0x386fc7(0x1d5))||'[]'),_0x2559c7=document[_0x386fc7(0x1b4)](_0x386fc7(0x1e4));_0x2559c7[_0x386fc7(0x18a)]='';if(_0x5b7703[_0x386fc7(0x1ec)]===0x0){const _0x3bc822=document[_0x386fc7(0x1b4)](_0x386fc7(0x1dc))[_0x386fc7(0x185)];alert(translations[_0x3bc822]['errorNoRecords']);return;}const _0x2150c7=document[_0x386fc7(0x1b4)](_0x386fc7(0x1dc))[_0x386fc7(0x185)],_0x4bd476=document[_0x386fc7(0x1ae)](_0x386fc7(0x1df));_0x4bd476[_0x386fc7(0x181)]='card\x20shadow\x20p-4',_0x4bd476[_0x386fc7(0x18a)]=_0x386fc7(0x1e2)+translations[_0x2150c7][_0x386fc7(0x1da)]+_0x386fc7(0x1c5)+translations[_0x2150c7][_0x386fc7(0x1c2)]+_0x386fc7(0x191),_0x2559c7[_0x386fc7(0x198)](_0x4bd476);const _0x18af18=_0x4bd476[_0x386fc7(0x193)]('#stockContent');_0x5b7703[_0x386fc7(0x17f)](_0x190bd1=>{const _0x1fbc19=_0x386fc7,_0x464b6a=document[_0x1fbc19(0x1ae)](_0x1fbc19(0x1df));_0x464b6a[_0x1fbc19(0x181)]=_0x1fbc19(0x1eb),_0x464b6a['innerHTML']=_0x1fbc19(0x1b8)+translations[_0x2150c7][_0x1fbc19(0x1b6)]+_0x1fbc19(0x1f1)+_0x190bd1[_0x1fbc19(0x1ea)]+'</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mb-1\x22><strong>'+translations[_0x2150c7][_0x1fbc19(0x1c3)]+_0x1fbc19(0x1f1)+_0x190bd1[_0x1fbc19(0x1cb)]+_0x1fbc19(0x177)+translations[_0x2150c7][_0x1fbc19(0x1d9)]+_0x1fbc19(0x1f1)+getCurrencySymbol(_0x190bd1[_0x1fbc19(0x1ea)])+'\x20'+_0x190bd1['currentPrice']+_0x1fbc19(0x1b8)+translations[_0x2150c7][_0x1fbc19(0x1e5)]+':</strong>\x20'+getCurrencySymbol(_0x190bd1[_0x1fbc19(0x1ea)])+'\x20'+_0x190bd1['price']+_0x1fbc19(0x1d1)+(_0x190bd1['premium']>=0x0?_0x1fbc19(0x1a8):_0x1fbc19(0x195))+_0x1fbc19(0x1a9)+_0x190bd1[_0x1fbc19(0x1d0)]+_0x1fbc19(0x1cd)+translations[_0x2150c7][_0x1fbc19(0x1bd)]+':\x20'+_0x190bd1[_0x1fbc19(0x1d6)]+'</small></p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x18af18[_0x1fbc19(0x198)](_0x464b6a);});}async function downloadPDF(){const _0x26ec6f=_0x4ca5,_0x1eaf75=document[_0x26ec6f(0x1b4)](_0x26ec6f(0x1e4)),_0xdcfef=document[_0x26ec6f(0x1b4)]('languageSelect')[_0x26ec6f(0x185)];console[_0x26ec6f(0x188)](_0x26ec6f(0x1c9)),console[_0x26ec6f(0x188)](_0x26ec6f(0x186),_0x1eaf75[_0x26ec6f(0x1b9)][_0x26ec6f(0x1ec)]);if(!_0x1eaf75[_0x26ec6f(0x1b9)][_0x26ec6f(0x1ec)]){alert(translations[_0xdcfef][_0x26ec6f(0x1b1)]);return;}try{console[_0x26ec6f(0x188)](_0x26ec6f(0x1b2));const _0x2fe6b9=await new Promise(_0x904993=>{setTimeout(()=>{_0x904993(html2canvas(_0x1eaf75,{'scale':0x2,'useCORS':!![],'backgroundColor':'#ffffff'}));},0x1f4);});console[_0x26ec6f(0x188)]('Canvas\x20generated:',_0x2fe6b9);const {jsPDF:_0x3af9cd}=window[_0x26ec6f(0x18e)];console[_0x26ec6f(0x188)]('jsPDF\x20loaded:',_0x3af9cd);const _0x45c4fd=new _0x3af9cd('p','mm','a4'),_0x525a1b=_0x2fe6b9['toDataURL'](_0x26ec6f(0x17c));console[_0x26ec6f(0x188)](_0x26ec6f(0x1b7),_0x525a1b[_0x26ec6f(0x1ec)]);const _0x33d54a=_0x45c4fd['internal']['pageSize'][_0x26ec6f(0x1c6)](),_0x47459c=_0x45c4fd[_0x26ec6f(0x1bb)](_0x525a1b),_0x186578=_0x33d54a-0x14,_0x3ffcdb=_0x47459c[_0x26ec6f(0x1f0)]*_0x186578/_0x47459c[_0x26ec6f(0x17e)];_0x45c4fd[_0x26ec6f(0x1cc)](_0x525a1b,_0x26ec6f(0x1b0),0xa,0xa,_0x186578,_0x3ffcdb),console[_0x26ec6f(0x188)](_0x26ec6f(0x19d)),_0x45c4fd['save']('stock_report.pdf'),console[_0x26ec6f(0x188)](_0x26ec6f(0x1d7));}catch(_0x2f459e){console[_0x26ec6f(0x189)](_0x26ec6f(0x1ee),_0x2f459e),alert(_0x26ec6f(0x1d8));}}document['addEventListener']('DOMContentLoaded',()=>{const _0x35b122=_0x4ca5;console[_0x35b122(0x188)](_0x35b122(0x1e8),window[_0x35b122(0x1cf)]),console['log']('jspdf:',window[_0x35b122(0x18e)]),initKey(),lockCalculator(),document[_0x35b122(0x1b4)](_0x35b122(0x1dc))[_0x35b122(0x1ca)](_0x35b122(0x178),()=>{const _0x376596=_0x35b122,_0x331321=document[_0x376596(0x1b4)](_0x376596(0x1dc))['value'];changeLanguage(_0x331321);}),document['getElementById'](_0x35b122(0x190))[_0x35b122(0x1ca)](_0x35b122(0x1bc),calculate),changeLanguage('zh');});function changeLanguage(_0x3c56b0){const _0x23f5f7=_0x4ca5;document[_0x23f5f7(0x1da)]=translations[_0x3c56b0][_0x23f5f7(0x1da)],Object['entries'](translations[_0x3c56b0])[_0x23f5f7(0x17f)](([_0x4b08e6,_0x55ac59])=>{const _0x11761f=_0x23f5f7,_0x2f1617=document['querySelectorAll']('[id$=\x22'+_0x4b08e6+'\x22]');_0x2f1617[_0x11761f(0x17f)](_0x5e1914=>_0x5e1914[_0x11761f(0x18b)]=_0x55ac59);}),document[_0x23f5f7(0x1b4)]('inputKey')[_0x23f5f7(0x1ac)]=_0x3c56b0==='zh'?_0x23f5f7(0x184):'Enter\x20access\x20key',loadHistory();}
+    </script>
+</body>
+</html>
