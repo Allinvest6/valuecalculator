@@ -26,10 +26,50 @@
             .logo { height: 150px; }
             .calculator { padding: 1.5rem; margin: 1rem; }
         }
+/* 新增：导出报告里的股票卡片样式 */
+.record-card {
+    flex: 1 1 calc(33.333% - 20px);
+    min-width: 260px;
+    background: linear-gradient(135deg, #f9fafc, #eef2f7);
+    border-radius: 20px;
+    padding: 16px;
+    margin: 10px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.record-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+}
+.record-card .stock-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.4rem;
+}
+.record-card .price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.2rem 0;
+}
+.record-card .current-price {
+    color: #555;
+}
+.record-card .premium.positive {
+    color: #27ae60;
+}
+.record-card .premium.negative {
+    color: #e74c3c;
+}
+.record-card .timestamp {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 6px;
+}
+
     </style>
 </head>
 <body>
-<body oncontextmenu="return false;" onselectstart="return false;">
     <div class="disabled-overlay" id="lockOverlay">
         <div class="position-absolute top-50 start-50 translate-middle">
             <div class="card shadow">
@@ -307,7 +347,239 @@
             setTimeout(() => el.style.display = 'none', 2000);
         }
 
-        (function(_0x27a77d,_0x45caba){const _0x3c67b9=_0x4ca5,_0x548acd=_0x27a77d();while(!![]){try{const _0x20b7f0=-parseInt(_0x3c67b9(0x1b5))/0x1+parseInt(_0x3c67b9(0x1e6))/0x2*(-parseInt(_0x3c67b9(0x176))/0x3)+parseInt(_0x3c67b9(0x187))/0x4+-parseInt(_0x3c67b9(0x17d))/0x5+parseInt(_0x3c67b9(0x1e9))/0x6+-parseInt(_0x3c67b9(0x196))/0x7+parseInt(_0x3c67b9(0x19e))/0x8;if(_0x20b7f0===_0x45caba)break;else _0x548acd['push'](_0x548acd['shift']());}catch(_0x46ee1b){_0x548acd['push'](_0x548acd['shift']());}}}(_0x59d4,0x80fa3));function _0x59d4(){const _0x25bdd4=['placeholder','\x0a\x0a•\x20','createElement','block','PNG','errorNoRecords','Running\x20html2canvas...','toLocaleString','getElementById','942959tVTrbj','marketColumn','Image\x20data\x20created:','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mb-1\x22><strong>','children','#calculateButton','getImageProperties','click','timeColumn','push','quarterProfit','已禁用','errorStockName','disclaimer','stockColumn','splice','</h2>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-center\x20mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-muted\x20small\x20mb-0\x22\x20style=\x22font-size:\x200.9rem;\x22>','getWidth','setItem','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','Starting\x20PDF\x20download...','addEventListener','name','addImage','%)</small></p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mb-1\x22><small>','disabled','html2canvas','premium','\x20<small\x20class=\x22','countrySelect','price','resultPrice','stockHistory','timestamp','PDF\x20saved','PDF生成失败，请重试','currentPrice','title','\x0a•\x20','languageSelect','stockName','deleteButton','div','#languageSelect','join','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22d-flex\x20align-items-center\x20mb-8\x22\x20style=\x22margin-left:\x2016rem;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22https://i.imgur.com/naIXUw2.png\x22\x20alt=\x22Logo\x22\x20style=\x22width:\x20400px;\x20height:\x20auto;\x20margin-right:\x20-7rem;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h2\x20style=\x22font-size:\x202.5rem;\x22>','errorRevenue','recordCardsContainer','priceColumn','210fsYlVa','totalShares','html2canvas:','186888PbdkIG','country','border\x20p-3\x20m-2\x20rounded\x20flex-grow-1','length','round','PDF\x20generation\x20failed:','errorProfit','height',':</strong>\x20','#totalShares','#quarterRevenue','3495WlvJMu','</p>\x0a<p\x20class=\x22mb-1\x22><strong>','change','resultTitle','errorNegativeProfit','slice','image/png','4139440dpKPke','width','forEach','#countrySelect','className','display','#quarterProfit','请输入访问密钥','value','Container\x20children:','4183752hGrHvn','log','error','innerHTML','textContent','lockOverlay','quarterRevenue','jspdf','errorCurrentPrice','calculateButton','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22d-flex\x20flex-wrap\x22\x20id=\x22stockContent\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','growthRate','querySelector','style','text-danger','7060466cJLmJJ',')\x22>','appendChild','toFixed','growthError','#growthRate','HK$','Image\x20added\x20to\x20PDF','18824120xFiFjd','errorShares','disclaimerText','</button></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','#currentPrice','historyTable','stringify','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td><button\x20class=\x22btn\x20btn-sm\x20btn-danger\x22\x20onclick=\x22deleteRecord(','errorInvalidInput','parse','text-success','\x22>(','计算器状态:','getItem'];_0x59d4=function(){return _0x25bdd4;};return _0x59d4();}function lockCalculator(){const _0x4a67bf=_0x4ca5;isLocked=!![],document[_0x4a67bf(0x1b4)](_0x4a67bf(0x18c))[_0x4a67bf(0x194)][_0x4a67bf(0x182)]=_0x4a67bf(0x1af),enableCalculator(![]);}function enableCalculator(_0x185649){const _0x225974=_0x4ca5,_0x424f48=['#stockName',_0x225974(0x1a2),_0x225974(0x175),_0x225974(0x183),_0x225974(0x174),_0x225974(0x1ba),_0x225974(0x1e0),_0x225974(0x180),_0x225974(0x19b)];_0x424f48[_0x225974(0x17f)](_0x42578f=>{const _0x4833ef=_0x225974;document[_0x4833ef(0x193)](_0x42578f)[_0x4833ef(0x1ce)]=!_0x185649;}),console[_0x225974(0x188)](_0x225974(0x1aa),_0x185649?'已启用':_0x225974(0x1c0));}function calculate(){const _0x5986eb=_0x4ca5,_0x64279a=document[_0x5986eb(0x1b4)](_0x5986eb(0x1dc))[_0x5986eb(0x185)],_0x5b91a1=document[_0x5986eb(0x1b4)](_0x5986eb(0x1d2))[_0x5986eb(0x185)],_0x3a1f67=document['getElementById'](_0x5986eb(0x1dd))['value']['trim'](),_0x33bf40=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x1d9))[_0x5986eb(0x185)]),_0x919931=parseFloat(document['getElementById'](_0x5986eb(0x18d))['value']),_0x2c46e8=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x1bf))['value']),_0xaec918=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x1e7))[_0x5986eb(0x185)]),_0x4801a6=parseFloat(document[_0x5986eb(0x1b4)](_0x5986eb(0x192))[_0x5986eb(0x185)]);if(!validateInputs(_0x64279a,_0x3a1f67,_0x33bf40,_0x919931,_0x2c46e8,_0xaec918,_0x4801a6))return;const _0x4b0b11=Math[_0x5986eb(0x1ed)](_0x2c46e8/_0x919931*0x64);if(_0x4b0b11<0x0){alert(translations[_0x64279a][_0x5986eb(0x17a)]);return;}const _0xa3dec7=_0x4b0b11*0.2,_0x3386cd=_0x919931*0x4,_0x29a37f=_0x3386cd*_0xa3dec7/_0xaec918;let _0x255fca=_0x29a37f*(0x1+_0x4801a6/0x64);if(_0xaec918<0x1f4)_0x255fca*=0.8;else{if(_0xaec918<0x3e8)_0x255fca*=0.9;}_0x255fca=Math['max'](0x0,_0x255fca);const _0x2996f5={'CHINA':'¥','HK':_0x5986eb(0x19c),'US':'$','MY':'RM'}[_0x5b91a1];showResult(_0x64279a,_0x3a1f67,_0x2996f5,_0x255fca,_0x4801a6),saveRecord(_0x5b91a1,_0x3a1f67,_0x255fca,_0x33bf40,_0x4801a6),loadHistory();}function validateInputs(_0x34bd67,_0xfe5224,_0x3c2045,_0x4d83c3,_0x229b29,_0x3df86c,_0x1b26d4){const _0x15fab4=_0x4ca5,_0x5dea53=[];if(!_0xfe5224)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x1c1)]);if(isNaN(_0x3c2045)||_0x3c2045<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x18f)]);if(isNaN(_0x4d83c3)||_0x4d83c3<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x1e3)]);if(isNaN(_0x229b29)||_0x229b29<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x1ef)]);if(isNaN(_0x3df86c)||_0x3df86c<=0x0)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x19f)]);if(isNaN(_0x1b26d4)||_0x1b26d4<0x0||_0x1b26d4>0x64)_0x5dea53[_0x15fab4(0x1be)](translations[_0x34bd67][_0x15fab4(0x19a)]);if(_0x5dea53['length']>0x0)return alert(translations[_0x34bd67][_0x15fab4(0x1a6)]+_0x15fab4(0x1ad)+_0x5dea53[_0x15fab4(0x1e1)](_0x15fab4(0x1db))),![];return!![];}function showResult(_0x42d29c,_0x375bd4,_0xcb158,_0x261f3c,_0x27dd2b){const _0x484c7f=_0x4ca5,_0x25199b=document[_0x484c7f(0x1b4)]('result');_0x25199b[_0x484c7f(0x194)]['display']='block',document[_0x484c7f(0x1b4)](_0x484c7f(0x179))[_0x484c7f(0x18b)]=translations[_0x42d29c][_0x484c7f(0x179)]+'\x20'+_0x375bd4,document[_0x484c7f(0x1b4)](_0x484c7f(0x1d4))['textContent']=translations[_0x42d29c]['fairPrice']+'\x20'+_0xcb158+'\x20'+_0x261f3c[_0x484c7f(0x199)](0x2),document['getElementById'](_0x484c7f(0x1a0))[_0x484c7f(0x18b)]=translations[_0x42d29c][_0x484c7f(0x1c2)];}function saveRecord(_0x3ef38d,_0x4a8999,_0xa59e4d,_0x2f28b7,_0x4c1055){const _0xd59378=_0x4ca5,_0x117269=((_0xa59e4d-_0x2f28b7)/_0x2f28b7*0x64)[_0xd59378(0x199)](0x1),_0x4b61fd={'country':_0x3ef38d,'name':_0x4a8999,'price':_0xa59e4d['toFixed'](0x2),'currentPrice':_0x2f28b7[_0xd59378(0x199)](0x2),'growth':_0x4c1055[_0xd59378(0x199)](0x1),'premium':_0x117269,'timestamp':new Date()[_0xd59378(0x1b3)]()};let _0x59dcd9=JSON[_0xd59378(0x1a7)](localStorage[_0xd59378(0x1ab)](_0xd59378(0x1d5))||'[]');_0x59dcd9=_0x59dcd9[_0xd59378(0x17b)](-0x31),_0x59dcd9['push'](_0x4b61fd),localStorage[_0xd59378(0x1c7)](_0xd59378(0x1d5),JSON[_0xd59378(0x1a4)](_0x59dcd9));}function loadHistory(){const _0x3b5335=_0x4ca5,_0x1ceec6=document[_0x3b5335(0x1b4)](_0x3b5335(0x1dc))[_0x3b5335(0x185)],_0x3ac07b=JSON[_0x3b5335(0x1a7)](localStorage[_0x3b5335(0x1ab)](_0x3b5335(0x1d5))||'[]'),_0x286809=document['getElementById'](_0x3b5335(0x1a3));_0x286809['innerHTML']=_0x3ac07b['map']((_0x2bd25d,_0x3b6368)=>'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x2bd25d['country']+_0x3b5335(0x1c8)+_0x2bd25d[_0x3b5335(0x1cb)]+_0x3b5335(0x1c8)+getCurrencySymbol(_0x2bd25d[_0x3b5335(0x1ea)])+'\x20'+_0x2bd25d[_0x3b5335(0x1d9)]+'</td>\x0a<td>'+getCurrencySymbol(_0x2bd25d[_0x3b5335(0x1ea)])+'\x20'+_0x2bd25d[_0x3b5335(0x1d3)]+'<small\x20class=\x22'+(_0x2bd25d[_0x3b5335(0x1d0)]>=0x0?_0x3b5335(0x1a8):_0x3b5335(0x195))+_0x3b5335(0x1a9)+_0x2bd25d['premium']+'%)</small></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x2bd25d[_0x3b5335(0x1d6)]+_0x3b5335(0x1a5)+_0x3b6368+_0x3b5335(0x197)+translations[_0x1ceec6][_0x3b5335(0x1de)]+_0x3b5335(0x1a1))['join']('');}function _0x4ca5(_0x3ed669,_0x370c17){const _0x59d495=_0x59d4();return _0x4ca5=function(_0x4ca580,_0x4444d0){_0x4ca580=_0x4ca580-0x174;let _0x4eb2bb=_0x59d495[_0x4ca580];return _0x4eb2bb;},_0x4ca5(_0x3ed669,_0x370c17);}function deleteRecord(_0x26c26a){const _0x113538=_0x4ca5;let _0x106778=JSON[_0x113538(0x1a7)](localStorage[_0x113538(0x1ab)](_0x113538(0x1d5))||'[]');_0x106778[_0x113538(0x1c4)](_0x26c26a,0x1),localStorage[_0x113538(0x1c7)](_0x113538(0x1d5),JSON['stringify'](_0x106778)),loadHistory();}function getCurrencySymbol(_0x2264ce){return{'CHINA':'¥','HK':'HK$','US':'$','MY':'RM'}[_0x2264ce];}function generateAllRecordCards(){const _0x386fc7=_0x4ca5,_0x5b7703=JSON[_0x386fc7(0x1a7)](localStorage[_0x386fc7(0x1ab)](_0x386fc7(0x1d5))||'[]'),_0x2559c7=document[_0x386fc7(0x1b4)](_0x386fc7(0x1e4));_0x2559c7[_0x386fc7(0x18a)]='';if(_0x5b7703[_0x386fc7(0x1ec)]===0x0){const _0x3bc822=document[_0x386fc7(0x1b4)](_0x386fc7(0x1dc))[_0x386fc7(0x185)];alert(translations[_0x3bc822]['errorNoRecords']);return;}const _0x2150c7=document[_0x386fc7(0x1b4)](_0x386fc7(0x1dc))[_0x386fc7(0x185)],_0x4bd476=document[_0x386fc7(0x1ae)](_0x386fc7(0x1df));_0x4bd476[_0x386fc7(0x181)]='card\x20shadow\x20p-4',_0x4bd476[_0x386fc7(0x18a)]=_0x386fc7(0x1e2)+translations[_0x2150c7][_0x386fc7(0x1da)]+_0x386fc7(0x1c5)+translations[_0x2150c7][_0x386fc7(0x1c2)]+_0x386fc7(0x191),_0x2559c7[_0x386fc7(0x198)](_0x4bd476);const _0x18af18=_0x4bd476[_0x386fc7(0x193)]('#stockContent');_0x5b7703[_0x386fc7(0x17f)](_0x190bd1=>{const _0x1fbc19=_0x386fc7,_0x464b6a=document[_0x1fbc19(0x1ae)](_0x1fbc19(0x1df));_0x464b6a[_0x1fbc19(0x181)]=_0x1fbc19(0x1eb),_0x464b6a['innerHTML']=_0x1fbc19(0x1b8)+translations[_0x2150c7][_0x1fbc19(0x1b6)]+_0x1fbc19(0x1f1)+_0x190bd1[_0x1fbc19(0x1ea)]+'</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mb-1\x22><strong>'+translations[_0x2150c7][_0x1fbc19(0x1c3)]+_0x1fbc19(0x1f1)+_0x190bd1[_0x1fbc19(0x1cb)]+_0x1fbc19(0x177)+translations[_0x2150c7][_0x1fbc19(0x1d9)]+_0x1fbc19(0x1f1)+getCurrencySymbol(_0x190bd1[_0x1fbc19(0x1ea)])+'\x20'+_0x190bd1['currentPrice']+_0x1fbc19(0x1b8)+translations[_0x2150c7][_0x1fbc19(0x1e5)]+':</strong>\x20'+getCurrencySymbol(_0x190bd1[_0x1fbc19(0x1ea)])+'\x20'+_0x190bd1['price']+_0x1fbc19(0x1d1)+(_0x190bd1['premium']>=0x0?_0x1fbc19(0x1a8):_0x1fbc19(0x195))+_0x1fbc19(0x1a9)+_0x190bd1[_0x1fbc19(0x1d0)]+_0x1fbc19(0x1cd)+translations[_0x2150c7][_0x1fbc19(0x1bd)]+':\x20'+_0x190bd1[_0x1fbc19(0x1d6)]+'</small></p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x18af18[_0x1fbc19(0x198)](_0x464b6a);});}async function downloadPDF(){const _0x26ec6f=_0x4ca5,_0x1eaf75=document[_0x26ec6f(0x1b4)](_0x26ec6f(0x1e4)),_0xdcfef=document[_0x26ec6f(0x1b4)]('languageSelect')[_0x26ec6f(0x185)];console[_0x26ec6f(0x188)](_0x26ec6f(0x1c9)),console[_0x26ec6f(0x188)](_0x26ec6f(0x186),_0x1eaf75[_0x26ec6f(0x1b9)][_0x26ec6f(0x1ec)]);if(!_0x1eaf75[_0x26ec6f(0x1b9)][_0x26ec6f(0x1ec)]){alert(translations[_0xdcfef][_0x26ec6f(0x1b1)]);return;}try{console[_0x26ec6f(0x188)](_0x26ec6f(0x1b2));const _0x2fe6b9=await new Promise(_0x904993=>{setTimeout(()=>{_0x904993(html2canvas(_0x1eaf75,{'scale':0x2,'useCORS':!![],'backgroundColor':'#ffffff'}));},0x1f4);});console[_0x26ec6f(0x188)]('Canvas\x20generated:',_0x2fe6b9);const {jsPDF:_0x3af9cd}=window[_0x26ec6f(0x18e)];console[_0x26ec6f(0x188)]('jsPDF\x20loaded:',_0x3af9cd);const _0x45c4fd=new _0x3af9cd('p','mm','a4'),_0x525a1b=_0x2fe6b9['toDataURL'](_0x26ec6f(0x17c));console[_0x26ec6f(0x188)](_0x26ec6f(0x1b7),_0x525a1b[_0x26ec6f(0x1ec)]);const _0x33d54a=_0x45c4fd['internal']['pageSize'][_0x26ec6f(0x1c6)](),_0x47459c=_0x45c4fd[_0x26ec6f(0x1bb)](_0x525a1b),_0x186578=_0x33d54a-0x14,_0x3ffcdb=_0x47459c[_0x26ec6f(0x1f0)]*_0x186578/_0x47459c[_0x26ec6f(0x17e)];_0x45c4fd[_0x26ec6f(0x1cc)](_0x525a1b,_0x26ec6f(0x1b0),0xa,0xa,_0x186578,_0x3ffcdb),console[_0x26ec6f(0x188)](_0x26ec6f(0x19d)),_0x45c4fd['save']('stock_report.pdf'),console[_0x26ec6f(0x188)](_0x26ec6f(0x1d7));}catch(_0x2f459e){console[_0x26ec6f(0x189)](_0x26ec6f(0x1ee),_0x2f459e),alert(_0x26ec6f(0x1d8));}}document['addEventListener']('DOMContentLoaded',()=>{const _0x35b122=_0x4ca5;console[_0x35b122(0x188)](_0x35b122(0x1e8),window[_0x35b122(0x1cf)]),console['log']('jspdf:',window[_0x35b122(0x18e)]),initKey(),lockCalculator(),document[_0x35b122(0x1b4)](_0x35b122(0x1dc))[_0x35b122(0x1ca)](_0x35b122(0x178),()=>{const _0x376596=_0x35b122,_0x331321=document[_0x376596(0x1b4)](_0x376596(0x1dc))['value'];changeLanguage(_0x331321);}),document['getElementById'](_0x35b122(0x190))[_0x35b122(0x1ca)](_0x35b122(0x1bc),calculate),changeLanguage('zh');});function changeLanguage(_0x3c56b0){const _0x23f5f7=_0x4ca5;document[_0x23f5f7(0x1da)]=translations[_0x3c56b0][_0x23f5f7(0x1da)],Object['entries'](translations[_0x3c56b0])[_0x23f5f7(0x17f)](([_0x4b08e6,_0x55ac59])=>{const _0x11761f=_0x23f5f7,_0x2f1617=document['querySelectorAll']('[id$=\x22'+_0x4b08e6+'\x22]');_0x2f1617[_0x11761f(0x17f)](_0x5e1914=>_0x5e1914[_0x11761f(0x18b)]=_0x55ac59);}),document[_0x23f5f7(0x1b4)]('inputKey')[_0x23f5f7(0x1ac)]=_0x3c56b0==='zh'?_0x23f5f7(0x184):'Enter\x20access\x20key',loadHistory();}
+        function lockCalculator() {
+            isLocked = true;
+            document.getElementById('lockOverlay').style.display = 'block';
+            enableCalculator(false);
+        }
+
+        function enableCalculator(enabled) {
+            const elements = ['#stockName', '#currentPrice', '#quarterRevenue', '#quarterProfit', '#totalShares', 
+                             '#calculateButton', '#languageSelect', '#countrySelect', '#growthRate'];
+            elements.forEach(selector => {
+                document.querySelector(selector).disabled = !enabled;
+            });
+            console.log('计算器状态:', enabled ? '已启用' : '已禁用');
+        }
+
+        function calculate() {
+            const lang = document.getElementById('languageSelect').value;
+            const country = document.getElementById('countrySelect').value;
+            const stockName = document.getElementById('stockName').value.trim();
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value);
+            const qRevenue = parseFloat(document.getElementById('quarterRevenue').value);
+            const qProfit = parseFloat(document.getElementById('quarterProfit').value);
+            const shares = parseFloat(document.getElementById('totalShares').value);
+            const growthRate = parseFloat(document.getElementById('growthRate').value);
+
+            if (!validateInputs(lang, stockName, currentPrice, qRevenue, qProfit, shares, growthRate)) return;
+
+            const profitMargin = Math.round((qProfit / qRevenue) * 100);
+            if (profitMargin < 0) {
+                alert(translations[lang].errorNegativeProfit);
+                return;
+            }
+
+            const adjustmentFactor = profitMargin * 0.2;
+            const annualRevenue = qRevenue * 4;
+            const baseValue = (annualRevenue * adjustmentFactor) / shares;
+            let finalValue = baseValue * (1 + growthRate / 100);
+            if (shares < 500) finalValue *= 0.8;
+            else if (shares < 1000) finalValue *= 0.9;
+            finalValue = Math.max(0, finalValue);
+            const currency = { CHINA: '¥', HK: 'HK$', US: '$', MY: 'RM' }[country];
+
+            showResult(lang, stockName, currency, finalValue, growthRate);
+            saveRecord(country, stockName, finalValue, currentPrice, growthRate);
+            loadHistory();
+        }
+
+        function validateInputs(lang, stockName, currentPrice, qRevenue, qProfit, shares, growthRate) {
+            const errors = [];
+            
+            if (!stockName) errors.push(translations[lang].errorStockName);
+            if (isNaN(currentPrice) || currentPrice <= 0) errors.push(translations[lang].errorCurrentPrice);
+            if (isNaN(qRevenue) || qRevenue <= 0) errors.push(translations[lang].errorRevenue);
+            if (isNaN(qProfit) || qProfit <= 0) errors.push(translations[lang].errorProfit);
+            if (isNaN(shares) || shares <= 0) errors.push(translations[lang].errorShares);
+            if (isNaN(growthRate) || growthRate < 0 || growthRate > 100) errors.push(translations[lang].growthError);
+
+            if (errors.length > 0) {
+                alert(`${translations[lang].errorInvalidInput}\n\n• ${errors.join('\n• ')}`);
+                return false;
+            }
+            return true;
+        }
+
+        function showResult(lang, stockName, currency, value, growthRate) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('resultTitle').textContent = `${translations[lang].resultTitle} ${stockName}`;
+            document.getElementById('resultPrice').textContent = `${translations[lang].fairPrice} ${currency} ${value.toFixed(2)}`;
+            document.getElementById('disclaimerText').textContent = translations[lang].disclaimer;
+        }
+
+        function saveRecord(country, name, price, currentPrice, growthRate) {
+            const premium = ((price - currentPrice) / currentPrice * 100).toFixed(1);
+            const record = {
+                country: country,
+                name: name,
+                price: price.toFixed(2),
+                currentPrice: currentPrice.toFixed(2),
+                growth: growthRate.toFixed(1),
+                premium: premium,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            let history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            history = history.slice(-49);
+            history.push(record);
+            localStorage.setItem('stockHistory', JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            const lang = document.getElementById('languageSelect').value;
+            const history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            const tbody = document.getElementById('historyTable');
+            
+            tbody.innerHTML = history.map((item, index) => `
+                <tr>
+                    <td>${item.country}</td>
+                    <td>${item.name}</td>
+                    <td>${getCurrencySymbol(item.country)} ${item.currentPrice}</td>
+<td>${getCurrencySymbol(item.country)} ${item.price}<small class="${item.premium >= 0 ? 'text-success' : 'text-danger'}">(${item.premium}%)</small></td>
+                    <td>${item.timestamp}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="deleteRecord(${index})">${translations[lang].deleteButton}</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteRecord(index) {
+            let history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            history.splice(index, 1);
+            localStorage.setItem('stockHistory', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function getCurrencySymbol(country) {
+            return { CHINA: '¥', HK: 'HK$', US: '$', MY: 'RM' }[country];
+        }
+
+        function generateAllRecordCards() {
+            const history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            const container = document.getElementById('recordCardsContainer');
+            container.innerHTML = '';
+
+            if (history.length === 0) {
+                const lang = document.getElementById('languageSelect').value;
+                alert(translations[lang].errorNoRecords);
+                return;
+            }
+
+            const lang = document.getElementById('languageSelect').value;
+            const cardWrapper = document.createElement('div');
+            cardWrapper.className = 'card shadow p-4';
+
+            cardWrapper.innerHTML = `
+                <div class="d-flex align-items-center mb-8" style="margin-left: 16rem;">
+                    <img src="https://i.imgur.com/naIXUw2.png" alt="Logo" style="width: 400px; height: auto; margin-right: -7rem;">
+                    <h2 style="font-size: 2.5rem;">${translations[lang].title}</h2>
+                </div>
+                <div class="text-center mb-4">
+                    <p class="text-muted small mb-0" style="font-size: 0.9rem;">${translations[lang].disclaimer}</p>
+                </div>
+                <div class="d-flex flex-wrap" id="stockContent"></div>
+            `;
+
+            container.appendChild(cardWrapper);
+            const stockContent = cardWrapper.querySelector('#stockContent');
+
+            history.forEach((item) => {
+    const stock = document.createElement('div');
+    stock.className = 'record-card';
+    stock.innerHTML = `
+        <div class="stock-name">${item.name} (${item.country})</div>
+        <div class="price">${translations[lang].priceColumn}: ${getCurrencySymbol(item.country)} ${item.price}</div>
+        <div class="price current-price">${translations[lang].currentPrice}: ${getCurrencySymbol(item.country)} ${item.currentPrice}</div>
+        <div class="premium ${item.premium >= 0 ? 'positive' : 'negative'}">${translations[lang].premiumRate}: ${item.premium}%</div>
+        <div class="timestamp">${item.timestamp}</div>
+    `;
+    stockContent.appendChild(stock);
+});
+
+        }
+
+        async function downloadPDF() {
+            const container = document.getElementById('recordCardsContainer');
+            const lang = document.getElementById('languageSelect').value;
+
+            console.log('Starting PDF download...');
+            console.log('Container children:', container.children.length);
+
+            if (!container.children.length) {
+                alert(translations[lang].errorNoRecords);
+                return;
+            }
+
+            try {
+                console.log('Running html2canvas...');
+                const canvas = await new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve(html2canvas(container, { 
+                            scale: 2, 
+                            useCORS: true, 
+                            backgroundColor: '#ffffff' 
+                        }));
+                    }, 500);
+                });
+                console.log('Canvas generated:', canvas);
+
+                const { jsPDF } = window.jspdf;
+                console.log('jsPDF loaded:', jsPDF);
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgData = canvas.toDataURL('image/png');
+                console.log('Image data created:', imgData.length);
+
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const imgProps = pdf.getImageProperties(imgData);
+                const imgWidth = pageWidth - 20;
+                const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                console.log('Image added to PDF');
+                pdf.save('stock_report.pdf');
+                console.log('PDF saved');
+            } catch (error) {
+                console.error('PDF generation failed:', error);
+                alert('PDF生成失败，请重试');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('html2canvas:', window.html2canvas);
+            console.log('jspdf:', window.jspdf);
+            initKey();
+            lockCalculator();
+            
+            document.getElementById('languageSelect').addEventListener('change', () => {
+                const lang = document.getElementById('languageSelect').value;
+                changeLanguage(lang);
+            });
+            
+            document.getElementById('calculateButton').addEventListener('click', calculate);
+            changeLanguage('zh');
+        });
+
+        function changeLanguage(lang) {
+            document.title = translations[lang].title;
+            Object.entries(translations[lang]).forEach(([key, value]) => {
+                const elements = document.querySelectorAll(`[id$="${key}"]`);
+                elements.forEach(el => el.textContent = value);
+            });
+            document.getElementById('inputKey').placeholder = lang === 'zh' ? '请输入访问密钥' : 'Enter access key';
+            loadHistory();
+        }
     </script>
 </body>
 </html>
