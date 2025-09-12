@@ -5,8 +5,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="888888" name="app-key"/>
     <title>股票估值计算器</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <style>
@@ -26,47 +26,46 @@
             .logo { height: 150px; }
             .calculator { padding: 1.5rem; margin: 1rem; }
         }
-/* 新增：导出报告里的股票卡片样式 */
-.record-card {
-    flex: 1 1 calc(33.333% - 20px);
-    min-width: 260px;
-    background: linear-gradient(135deg, #f9fafc, #eef2f7);
-    border-radius: 20px;
-    padding: 16px;
-    margin: 10px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.record-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0,0,0,0.15);
-}
-.record-card .stock-name {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 0.4rem;
-}
-.record-card .price {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0.2rem 0;
-}
-.record-card .current-price {
-    color: #555;
-}
-.record-card .premium.positive {
-    color: #27ae60;
-}
-.record-card .premium.negative {
-    color: #e74c3c;
-}
-.record-card .timestamp {
-    font-size: 0.8rem;
-    color: #888;
-    margin-top: 6px;
-}
-
+        /* 新增：导出报告里的股票卡片样式 */
+        .record-card {
+            flex: 1 1 calc(33.333% - 20px);
+            min-width: 260px;
+            background: linear-gradient(135deg, #f9fafc, #eef2f7);
+            border-radius: 20px;
+            padding: 16px;
+            margin: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .record-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+        .record-card .stock-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.4rem;
+        }
+        .record-card .price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0.2rem 0;
+        }
+        .record-card .current-price {
+            color: #555;
+        }
+        .record-card .premium.positive {
+            color: #27ae60;
+        }
+        .record-card .premium.negative {
+            color: #e74c3c;
+        }
+        .record-card .timestamp {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 6px;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +84,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="keyManagerModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -113,6 +113,45 @@
             </div>
         </div>
     </div>
+
+    <!-- 编辑记录模态 -->
+    <div class="modal fade" id="editRecordModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">编辑记录 Edit Record</h5>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">季度收入 (百万)</label>
+              <input type="number" class="form-control" id="editRevenue" min="0.01" step="0.01">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">季度利润 (百万)</label>
+              <input type="number" class="form-control" id="editProfit" min="0.01" step="0.01">
+            </div>
+<div class="mb-3">
+  <label class="form-label">当前股价</label>
+  <input type="number" class="form-control" id="editCurrentPrice" min="0.01" step="0.01">
+</div>
+            <div class="mb-3">
+              <label class="form-label">总股本 (百万股)</label>
+              <input type="number" class="form-control" id="editShares" min="1" step="1">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">预期成长值 (%)</label>
+              <input type="number" class="form-control" id="editGrowth" min="0" max="100" step="0.1">
+            </div>
+            <input type="hidden" id="editIndex">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" onclick="saveEditedRecord()">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
         <header class="header">
             <div class="logo-container">
@@ -120,6 +159,7 @@
                 <h1 class="app-title">股票估值计算器</h1>
             </div>
         </header>
+
         <div class="calculator">
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
@@ -139,36 +179,55 @@
                     </select>
                 </div>
             </div>
+
+            <!-- 档案输入与切换 -->
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="archiveName" placeholder="输入档案名字 (如: 科技股2025Q1)">
+              <button class="btn btn-outline-primary" id="createArchiveBtn" onclick="createOrSwitchArchive()">使用/新建档案</button>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">已保存的档案：</label>
+              <div class="d-flex gap-2">
+                <select class="form-select" id="archiveSelect" onchange="switchArchive(this.value)">
+                  <option value="">请选择档案</option>
+                </select>
+                <button class="btn btn-outline-danger" id="deleteArchiveBtn" onclick="deleteArchive()">删除档案</button>
+              </div>
+            </div>
+
             <div class="mb-4">
                 <label class="form-label" id="stockNameLabel">Stock Name</label>
-                <input class="form-control" disabled id="stockName" required type="text"/>
+                <input class="form-control" id="stockName" required type="text"/>
                 <label class="form-label mt-2" id="currentPriceLabel">当前股价</label>
-                <input class="form-control" disabled id="currentPrice" min="0.01" required step="0.01" type="number"/>
+                <input class="form-control" id="currentPrice" min="0.01" required step="0.01" type="number"/>
             </div>
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
                     <label class="form-label" id="quarterRevenueLabel">季度收入（百万）</label>
-                    <input class="form-control" disabled id="quarterRevenue" min="0.01" required step="0.01" type="number"/>
+                    <input class="form-control" id="quarterRevenue" min="0.01" required step="0.01" type="number"/>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" id="quarterProfitLabel">季度利润（百万）</label>
-                    <input class="form-control" disabled id="quarterProfit" min="0.01" required step="0.01" type="number"/>
+                    <input class="form-control" id="quarterProfit" min="0.01" required step="0.01" type="number"/>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" id="totalSharesLabel">总股本（百万股）</label>
-                    <input class="form-control" disabled id="totalShares" min="1" required type="number"/>
+                    <input class="form-control" id="totalShares" min="1" required type="number"/>
                 </div>
                 <div class="col-md-3 growth-input">
                     <label class="form-label" id="growthLabel">预期成长值%</label>
-                    <input class="form-control" disabled id="growthRate" max="100" min="0" required step="0.1" type="number" value="0"/>
+                    <input class="form-control" id="growthRate" max="100" min="0" required step="0.1" type="number" value="0"/>
                 </div>
             </div>
-            <button class="btn btn-primary w-100 mb-4" disabled id="calculateButton">Calculate & Save</button>
+            <button class="btn btn-primary w-100 mb-4" id="calculateButton">Calculate & Save</button>
+
             <div class="mt-4 p-3 bg-light rounded" id="result" style="display: none;">
                 <h5 id="resultTitle"></h5>
                 <p class="fs-4 text-primary" id="resultPrice"></p>
                 <p class="text-muted small mt-3" id="disclaimerText"></p>
             </div>
+
             <div class="history mt-5">
                 <h5 class="mb-3" id="historyTitle">Saved Records</h5>
                 <div class="table-responsive">
@@ -178,7 +237,7 @@
                                 <th id="marketColumn">Market</th>
                                 <th id="stockColumn">Stock</th>
                                 <th id="currentPriceColumn">Current Price</th>
-<th id="priceColumn">Price</th>
+                                <th id="priceColumn">Price</th>
                                 <th id="timeColumn">Time</th>
                                 <th id="actionColumn">Action</th>
                             </tr>
@@ -188,10 +247,19 @@
                 </div>
             </div>
         </div>
-        <button class="btn btn-success w-100 mb-4" onclick="generateAllRecordCards()">一键生成所有保存卡片 Generate all saved cards</button>
-        <button class="btn btn-danger w-100 mb-4" onclick="downloadPDF()">下载PDF报告 Download PDF</button>
-        <div class="mt-4" id="recordCardsContainer"></div>
+
+        <!-- 按钮区域（卡片/报表/导入导出/PDF） -->
+        <div class="mt-3">
+            <button class="btn btn-success w-100 mb-2" onclick="generateAllRecordCards()">一键生成卡片 Generate Cards</button>
+            <button class="btn btn-info w-100 mb-2" onclick="generateAllRecordReport()">生成报表 Generate Report</button>
+            <button class="btn btn-secondary w-100 mb-2" onclick="exportArchive()">导出当前档案 Export Archive</button>
+            <input type="file" id="importArchiveFile" style="display:none" accept=".json" onchange="importArchive(event)">
+            <button class="btn btn-warning w-100 mb-2" onclick="document.getElementById('importArchiveFile').click()">导入档案 Import Archive</button>
+            <button class="btn btn-danger w-100 mb-4" onclick="downloadPDF()">下载PDF报告 Download PDF</button>
+            <div class="mt-4" id="recordCardsContainer"></div>
+        </div>
     </div>
+
     <script>
         const translations = {
             zh: {
@@ -217,6 +285,7 @@
                 timeColumn: "计算时间",
                 actionColumn: "操作",
                 deleteButton: "删除",
+                editButton: "编辑",
                 errorInvalidInput: "请填写完整有效的输入值",
                 errorNegativeProfit: "净利润率不能为负数",
                 errorStockName: "股票名称不能为空",
@@ -231,8 +300,14 @@
                 currentPriceLabel: "当前股价",
                 currentPrice: "当前股价",
                 premiumRate: "溢价率",
-                errorCurrentPrice: "当前股价必须为有效正数"
-
+                errorCurrentPrice: "当前股价必须为有效正数",
+                archiveInputPlaceholder: "输入档案名字 (如: 科技股2025Q1)",
+                createArchiveButton: "使用/新建档案",
+                archiveLabel: "已保存的档案：",
+                deleteArchiveButton: "删除档案",
+                exportArchiveButton: "导出当前档案",
+                importArchiveButton: "导入档案",
+                archiveUntitled: "未命名档案"
             },
             en: {
                 title: "Stock Value Calculator",
@@ -247,7 +322,7 @@
                 calculateButton: "Calculate & Save",
                 resultTitle: "Result: ",
                 fairPrice: "Fair Price: ",
-                disclaimer: "Disclaimer: Results are for reference only and do not constitute investment advice. ",
+                disclaimer: "Disclaimer: Results are for reference only and do not constitute investment advice.",
                 growthNote: "(Applied {value}% growth adjustment)",
                 historyTitle: "History Records",
                 marketColumn: "Market",
@@ -257,6 +332,7 @@
                 timeColumn: "Time",
                 actionColumn: "Action",
                 deleteButton: "Delete",
+                editButton: "Edit",
                 errorInvalidInput: "Invalid input values",
                 errorNegativeProfit: "Negative profit not allowed",
                 errorStockName: "Stock name cannot be empty",
@@ -271,11 +347,19 @@
                 currentPriceLabel: "Current Price",
                 currentPrice: "Current Price",
                 premiumRate: "Premium Rate",
-                errorCurrentPrice: "Current price must be a valid positive number"
+                errorCurrentPrice: "Current price must be a valid positive number",
+                archiveInputPlaceholder: "Enter archive name (e.g. TechQ1-2025)",
+                createArchiveButton: "Use / Create Archive",
+                archiveLabel: "Saved Archives:",
+                deleteArchiveButton: "Delete Archive",
+                exportArchiveButton: "Export Current Archive",
+                importArchiveButton: "Import Archive",
+                archiveUntitled: "Untitled Archive"
             }
         };
 
         let isLocked = true;
+        let currentArchive = null; // 当前档案名
 
         function initKey() {
             const metaKey = document.querySelector('meta[name="app-key"]');
@@ -298,16 +382,11 @@
             const savedKey = localStorage.getItem('appKey');
             const lang = document.getElementById('languageSelect').value;
             
-            console.log('输入的密钥:', inputKey);
-            console.log('保存的密钥:', savedKey);
-            
             if (inputKey === savedKey) {
-                console.log('密钥匹配，解锁计算器');
                 isLocked = false;
                 document.getElementById('lockOverlay').style.display = 'none';
                 enableCalculator(true);
             } else {
-                console.log('密钥不匹配，显示错误');
                 showMessage('keyError', translations[lang].errorInvalidInput);
             }
         }
@@ -355,13 +434,15 @@
 
         function enableCalculator(enabled) {
             const elements = ['#stockName', '#currentPrice', '#quarterRevenue', '#quarterProfit', '#totalShares', 
-                             '#calculateButton', '#languageSelect', '#countrySelect', '#growthRate'];
+                             '#calculateButton', '#languageSelect', '#countrySelect', '#growthRate', '#archiveName', '#createArchiveBtn'];
             elements.forEach(selector => {
-                document.querySelector(selector).disabled = !enabled;
+                const el = document.querySelector(selector);
+                if (el) el.disabled = !enabled;
             });
             console.log('计算器状态:', enabled ? '已启用' : '已禁用');
         }
 
+        // 计算函数（调用保存）
         function calculate() {
             const lang = document.getElementById('languageSelect').value;
             const country = document.getElementById('countrySelect').value;
@@ -420,7 +501,71 @@
             document.getElementById('disclaimerText').textContent = translations[lang].disclaimer;
         }
 
+        // ====== 档案管理 & 历史记录 (把 record 存到 archive_<name> ) ======
+        function loadArchiveList() {
+            const archiveSelect = document.getElementById('archiveSelect');
+            archiveSelect.innerHTML = '<option value="">请选择档案</option>';
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('archive_')) {
+                    const archiveName = key.replace('archive_', '');
+                    const option = document.createElement('option');
+                    option.value = archiveName;
+                    option.textContent = archiveName;
+                    archiveSelect.appendChild(option);
+                }
+            });
+        }
+
+        function createOrSwitchArchive() {
+            const name = document.getElementById('archiveName').value.trim();
+            if (!name) {
+                alert("请输入档案名字！");
+                return;
+            }
+            currentArchive = name;
+            if (!localStorage.getItem('archive_' + name)) {
+                localStorage.setItem('archive_' + name, '[]');
+                alert("已新建档案：" + name);
+            } else {
+                alert("已切换到档案：" + name);
+            }
+            loadArchiveList();
+            document.getElementById('archiveSelect').value = name;
+            loadHistory();
+        }
+
+        function switchArchive(name) {
+            if (!name) return;
+            currentArchive = name;
+            loadHistory();
+            alert("已切换到档案：" + name);
+        }
+
+        function deleteArchive() {
+            if (!currentArchive) {
+                alert("请先选择要删除的档案！");
+                return;
+            }
+            if (confirm(`确定要删除档案 "${currentArchive}" 吗？此操作不可恢复！`)) {
+                localStorage.removeItem('archive_' + currentArchive);
+                alert("档案已删除：" + currentArchive);
+                currentArchive = null;
+                loadArchiveList();
+                document.getElementById('historyTable').innerHTML = '';
+                document.getElementById('recordCardsContainer').innerHTML = '';
+            }
+        }
+
+        // 保存记录到当前档案（包含收入/利润/股本/growth）
         function saveRecord(country, name, price, currentPrice, growthRate) {
+            if (!currentArchive) {
+                alert("请先输入或选择一个档案名字！");
+                return;
+            }
+            const qRevenue = parseFloat(document.getElementById('quarterRevenue').value);
+            const qProfit = parseFloat(document.getElementById('quarterProfit').value);
+            const shares = parseFloat(document.getElementById('totalShares').value);
+
             const premium = ((price - currentPrice) / currentPrice * 100).toFixed(1);
             const record = {
                 country: country,
@@ -429,49 +574,135 @@
                 currentPrice: currentPrice.toFixed(2),
                 growth: growthRate.toFixed(1),
                 premium: premium,
-                timestamp: new Date().toLocaleString()
+                revenue: qRevenue.toFixed(2),
+                profit: qProfit.toFixed(2),
+                shares: Math.round(shares).toString(),
+                timestamp: new Date().toLocaleDateString()
             };
             
-            let history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
             history = history.slice(-49);
             history.push(record);
-            localStorage.setItem('stockHistory', JSON.stringify(history));
+            localStorage.setItem('archive_' + currentArchive, JSON.stringify(history));
         }
 
+        // 加载当前档案历史到表格
         function loadHistory() {
             const lang = document.getElementById('languageSelect').value;
-            const history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
             const tbody = document.getElementById('historyTable');
-            
+
+            if (!currentArchive) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">尚未选择档案 / No archive selected</td></tr>';
+                return;
+            }
+
+            const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">当前档案暂无记录 / No records in this archive</td></tr>';
+                return;
+            }
+
             tbody.innerHTML = history.map((item, index) => `
                 <tr>
                     <td>${item.country}</td>
                     <td>${item.name}</td>
                     <td>${getCurrencySymbol(item.country)} ${item.currentPrice}</td>
-<td>${getCurrencySymbol(item.country)} ${item.price}<small class="${item.premium >= 0 ? 'text-success' : 'text-danger'}">(${item.premium}%)</small></td>
+                    <td>${getCurrencySymbol(item.country)} ${item.price} <small class="${parseFloat(item.premium) >= 0 ? 'text-success' : 'text-danger'}">(${item.premium}%)</small></td>
                     <td>${item.timestamp}</td>
-                    <td><button class="btn btn-sm btn-danger" onclick="deleteRecord(${index})">${translations[lang].deleteButton}</button></td>
+                    <td>
+                      <button class="btn btn-sm btn-primary me-1" onclick="editRecord(${index})">${translations[lang].editButton}</button>
+                      <button class="btn btn-sm btn-danger" onclick="deleteRecord(${index})">${translations[lang].deleteButton}</button>
+                    </td>
                 </tr>
             `).join('');
         }
 
         function deleteRecord(index) {
-            let history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            if (!currentArchive) return;
+            let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
             history.splice(index, 1);
-            localStorage.setItem('stockHistory', JSON.stringify(history));
+            localStorage.setItem('archive_' + currentArchive, JSON.stringify(history));
             loadHistory();
         }
 
-        function getCurrencySymbol(country) {
-            return { CHINA: '¥', HK: 'HK$', US: '$', MY: 'RM' }[country];
+        // 编辑记录
+        function editRecord(index) {
+            if (!currentArchive) return;
+            const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+            const item = history[index];
+            if (!item) return;
+
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editRevenue').value = item.revenue || "";
+            document.getElementById('editProfit').value = item.profit || "";
+document.getElementById('editCurrentPrice').value = item.currentPrice || "";
+            document.getElementById('editShares').value = item.shares || "";
+            document.getElementById('editGrowth').value = item.growth || "";
+
+            new bootstrap.Modal(document.getElementById('editRecordModal')).show();
         }
 
+        // 保存编辑后的记录，并重新计算合理价与溢价
+        function saveEditedRecord() {
+            const index = parseInt(document.getElementById('editIndex').value);
+            let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+            let item = history[index];
+            if (!item) return;
+
+            const revenue = parseFloat(document.getElementById('editRevenue').value);
+            const profit = parseFloat(document.getElementById('editProfit').value);
+const currentPrice = parseFloat(document.getElementById('editCurrentPrice').value);
+            const shares = parseFloat(document.getElementById('editShares').value);
+            const growth = parseFloat(document.getElementById('editGrowth').value);
+
+            if (isNaN(revenue) || isNaN(profit) || isNaN(shares) || isNaN(growth)) {
+    alert("请输入有效数值！");
+    return;
+}
+
+if (isNaN(currentPrice) || currentPrice <= 0) {
+    alert("请输入有效的当前股价！");
+    return;
+}
+
+
+
+            // 重新计算合理股价
+            const profitMargin = Math.round((profit / revenue) * 100);
+            const adjustmentFactor = profitMargin * 0.2;
+            const annualRevenue = revenue * 4;
+            const baseValue = (annualRevenue * adjustmentFactor) / shares;
+            let finalValue = baseValue * (1 + growth / 100);
+            if (shares < 500) finalValue *= 0.8;
+            else if (shares < 1000) finalValue *= 0.9;
+            finalValue = Math.max(0, finalValue);
+
+            // 更新记录字段
+            item.revenue = revenue.toFixed(2);
+            item.profit = profit.toFixed(2);
+            item.shares = Math.round(shares).toString();
+            item.growth = growth.toFixed(1);
+            item.price = finalValue.toFixed(2);
+
+            item.currentPrice = currentPrice.toFixed(2);
+item.premium = ((finalValue - currentPrice) / currentPrice * 100).toFixed(1);
+            item.timestamp = new Date().toLocaleDateString();
+
+            history[index] = item;
+            localStorage.setItem('archive_' + currentArchive, JSON.stringify(history));
+
+            bootstrap.Modal.getInstance(document.getElementById('editRecordModal')).hide();
+            loadHistory();
+            alert("记录已更新 ✅");
+        }
+
+        // ==== 生成卡片/报表，显示当前档案名字 ====
         function generateAllRecordCards() {
-            const history = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+            const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
             const container = document.getElementById('recordCardsContainer');
             container.innerHTML = '';
 
-            if (history.length === 0) {
+            if (!currentArchive || history.length === 0) {
                 const lang = document.getElementById('languageSelect').value;
                 alert(translations[lang].errorNoRecords);
                 return;
@@ -483,12 +714,17 @@
 
             cardWrapper.innerHTML = `
                 <div class="d-flex align-items-center mb-8" style="margin-left: 16rem;">
-                    <img src="https://i.imgur.com/naIXUw2.png" alt="Logo" style="width: 400px; height: auto; margin-right: -7rem;">
-                    <h2 style="font-size: 2.5rem;">${translations[lang].title}</h2>
-                </div>
-                <div class="text-center mb-4">
-                    <p class="text-muted small mb-0" style="font-size: 0.9rem;">${translations[lang].disclaimer}</p>
-                </div>
+    <img src="https://i.imgur.com/naIXUw2.png" alt="Logo" style="width:400px; height:auto; margin-right:-7rem;">
+    <h2 style="font-size: 2.5rem; font-weight: 700; margin:0;">${translations[lang].title}</h2>
+</div>
+<div class="text-center mb-4">
+    <p class="text-muted small mb-0">${translations[lang].disclaimer}</p>
+</div>
+<div class="text-center mb-4">
+    <h3 style="font-size: 2rem; font-weight: 700; color:#2c3e50;">
+        ${currentArchive || translations[lang].archiveUntitled}
+    </h3>
+</div>
                 <div class="d-flex flex-wrap" id="stockContent"></div>
             `;
 
@@ -496,26 +732,140 @@
             const stockContent = cardWrapper.querySelector('#stockContent');
 
             history.forEach((item) => {
-    const stock = document.createElement('div');
-    stock.className = 'record-card';
-    stock.innerHTML = `
-        <div class="stock-name">${item.name} (${item.country})</div>
-        <div class="price">${translations[lang].priceColumn}: ${getCurrencySymbol(item.country)} ${item.price}</div>
-        <div class="price current-price">${translations[lang].currentPrice}: ${getCurrencySymbol(item.country)} ${item.currentPrice}</div>
-        <div class="premium ${item.premium >= 0 ? 'positive' : 'negative'}">${translations[lang].premiumRate}: ${item.premium}%</div>
-        <div class="timestamp">${item.timestamp}</div>
-    `;
-    stockContent.appendChild(stock);
-});
-
+                const stock = document.createElement('div');
+                stock.className = 'record-card';
+                stock.innerHTML = `
+                    <div class="stock-name">${item.name} (${item.country})</div>
+                    <div class="price">${translations[lang].priceColumn}: ${getCurrencySymbol(item.country)} ${item.price}</div>
+                    <div class="price current-price">${translations[lang].currentPrice}: ${getCurrencySymbol(item.country)} ${item.currentPrice}</div>
+                    <div class="premium ${parseFloat(item.premium) >= 0 ? 'positive' : 'negative'}">${translations[lang].premiumRate}: ${item.premium}%</div>
+                    <div class="timestamp">${item.timestamp}</div>
+                `;
+                stockContent.appendChild(stock);
+            });
         }
 
+        function generateAllRecordReport() {
+    const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+    const container = document.getElementById('recordCardsContainer');
+    container.innerHTML = '';
+
+    if (!currentArchive || history.length === 0) {
+        const lang = document.getElementById('languageSelect').value;
+        alert(translations[lang].errorNoRecords);
+        return;
+    }
+
+    const lang = document.getElementById('languageSelect').value;
+    const reportWrapper = document.createElement('div');
+    reportWrapper.className = 'card shadow p-4';
+
+    reportWrapper.innerHTML = `
+        <div class="d-flex align-items-center mb-8" style="margin-left: 16rem;">
+            <img src="https://i.imgur.com/naIXUw2.png" alt="Logo" 
+                 style="width:400px; height:auto; margin-right:-7rem;">
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin:0;">
+                ${translations[lang].title}
+            </h2>
+        </div>
+        <div class="text-center mb-2">
+            <p class="text-muted small mb-0">${translations[lang].disclaimer}</p>
+        </div>
+        <div class="text-center mb-4">
+            <h3 style="font-size: 2rem; font-weight: 700; color:#2c3e50;">
+                ${currentArchive || translations[lang].archiveUntitled}
+            </h3>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-light">
+                    <tr>
+                        <!-- 已去掉市场 Market -->
+                        <th>${translations[lang].stockColumn}</th>
+                        <th>${translations[lang].priceColumn}</th>
+                        <th>${translations[lang].currentPriceColumn}</th>
+                        <th>${translations[lang].premiumRate}</th>
+                        <th>${translations[lang].timeColumn}</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTable"></tbody>
+            </table>
+        </div>
+    `;
+
+    container.appendChild(reportWrapper);
+
+    const tbody = reportWrapper.querySelector('#reportTable');
+    tbody.innerHTML = history.map(item => `
+        <tr>
+            <!-- 去掉了市场 -->
+            <td>${item.name}</td>
+            <td>${getCurrencySymbol(item.country)} ${item.price}</td>
+            <td>${getCurrencySymbol(item.country)} ${item.currentPrice}</td>
+            <td class="${parseFloat(item.premium) >= 0 ? 'text-success' : 'text-danger'}">${item.premium}%</td>
+            <td>${item.timestamp}</td>
+        </tr>
+    `).join('');
+}
+
+
+        // 导出当前档案为 JSON
+        function exportArchive() {
+            if (!currentArchive) {
+                alert("请先选择档案再导出！");
+                return;
+            }
+            const data = localStorage.getItem('archive_' + currentArchive) || '[]';
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `archive_${currentArchive}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 导入档案（会让用户输入一个档案名）
+        function importArchive(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) {
+                        alert("文件格式错误");
+                        return;
+                    }
+                    let defaultName = file.name.replace(/\.json$/i, '') || 'imported_archive';
+                    const name = prompt("输入要保存的档案名字（将导入为此档案）：", defaultName);
+                    if (!name) {
+                        alert("已取消导入。");
+                        return;
+                    }
+                    if (localStorage.getItem('archive_' + name)) {
+                        if (!confirm("档案已存在，是否覆盖？（OK 覆盖 / Cancel 取消）")) {
+                            return;
+                        }
+                    }
+                    localStorage.setItem('archive_' + name, JSON.stringify(data));
+                    loadArchiveList();
+                    alert("导入成功");
+                } catch (err) {
+                    console.error(err);
+                    alert("导入失败：文件可能不是有效 JSON。");
+                }
+            };
+            reader.readAsText(file);
+            // 清空 input，方便下次导入相同文件
+            event.target.value = '';
+        }
+
+        // 下载显示区为 PDF（已留用）
         async function downloadPDF() {
             const container = document.getElementById('recordCardsContainer');
             const lang = document.getElementById('languageSelect').value;
-
-            console.log('Starting PDF download...');
-            console.log('Container children:', container.children.length);
 
             if (!container.children.length) {
                 alert(translations[lang].errorNoRecords);
@@ -523,23 +873,15 @@
             }
 
             try {
-                console.log('Running html2canvas...');
                 const canvas = await new Promise(resolve => {
                     setTimeout(() => {
-                        resolve(html2canvas(container, { 
-                            scale: 2, 
-                            useCORS: true, 
-                            backgroundColor: '#ffffff' 
-                        }));
-                    }, 500);
+                        resolve(html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }));
+                    }, 300);
                 });
-                console.log('Canvas generated:', canvas);
 
                 const { jsPDF } = window.jspdf;
-                console.log('jsPDF loaded:', jsPDF);
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const imgData = canvas.toDataURL('image/png');
-                console.log('Image data created:', imgData.length);
 
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const imgProps = pdf.getImageProperties(imgData);
@@ -547,40 +889,46 @@
                 const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
                 pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-                console.log('Image added to PDF');
                 pdf.save('stock_report.pdf');
-                console.log('PDF saved');
             } catch (error) {
-                console.error('PDF generation failed:', error);
+                console.error('PDF生成失败:', error);
                 alert('PDF生成失败，请重试');
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('html2canvas:', window.html2canvas);
-            console.log('jspdf:', window.jspdf);
-            initKey();
-            lockCalculator();
-            
-            document.getElementById('languageSelect').addEventListener('change', () => {
-                const lang = document.getElementById('languageSelect').value;
-                changeLanguage(lang);
-            });
-            
-            document.getElementById('calculateButton').addEventListener('click', calculate);
-            changeLanguage('zh');
-        });
+        function getCurrencySymbol(country) {
+            return { CHINA: '¥', HK: 'HK$', US: '$', MY: 'RM' }[country];
+        }
 
+        // 语言切换（并处理部分 placeholder / 按钮）
         function changeLanguage(lang) {
             document.title = translations[lang].title;
+            // 更新所有 id 以 key 结尾的文本（保持你原来的逻辑）
             Object.entries(translations[lang]).forEach(([key, value]) => {
                 const elements = document.querySelectorAll(`[id$="${key}"]`);
                 elements.forEach(el => el.textContent = value);
             });
+            // 特殊处理 placeholder / input / button
             document.getElementById('inputKey').placeholder = lang === 'zh' ? '请输入访问密钥' : 'Enter access key';
+            document.getElementById('archiveName').placeholder = translations[lang].archiveInputPlaceholder;
+            document.getElementById('createArchiveBtn').textContent = translations[lang].createArchiveButton;
+            document.getElementById('deleteArchiveBtn').textContent = translations[lang].deleteArchiveButton;
+            // 其它按钮（导入/导出）保持原文或可扩展
             loadHistory();
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initKey();
+            lockCalculator();
+            loadArchiveList();
+            document.getElementById('languageSelect').addEventListener('change', () => {
+                const lang = document.getElementById('languageSelect').value;
+                changeLanguage(lang);
+            });
+            document.getElementById('calculateButton').addEventListener('click', calculate);
+            // 初始语言为中文
+            changeLanguage('zh');
+        });
     </script>
 </body>
 </html>
-
