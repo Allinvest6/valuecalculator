@@ -596,7 +596,8 @@
                 return;
             }
 
-            const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+            let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+history = sortByPremium(history);
             if (history.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">当前档案暂无记录 / No records in this archive</td></tr>';
                 return;
@@ -628,7 +629,8 @@
         // 编辑记录
         function editRecord(index) {
             if (!currentArchive) return;
-            const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+            let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+history = sortByPremium(history);
             const item = history[index];
             if (!item) return;
 
@@ -698,7 +700,8 @@ item.premium = ((finalValue - currentPrice) / currentPrice * 100).toFixed(1);
 
         // ==== 生成卡片/报表，显示当前档案名字 ====
         function generateAllRecordCards() {
-            const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+            let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+history = sortByPremium(history);
             const container = document.getElementById('recordCardsContainer');
             container.innerHTML = '';
 
@@ -746,7 +749,8 @@ item.premium = ((finalValue - currentPrice) / currentPrice * 100).toFixed(1);
         }
 
         function generateAllRecordReport() {
-    const history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+    let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+history = sortByPremium(history);
     const container = document.getElementById('recordCardsContainer');
     container.innerHTML = '';
 
@@ -895,6 +899,12 @@ item.premium = ((finalValue - currentPrice) / currentPrice * 100).toFixed(1);
                 alert('PDF生成失败，请重试');
             }
         }
+
+// 通用排序函数：溢价率从大到小
+function sortByPremium(history) {
+    return history.sort((a, b) => parseFloat(b.premium) - parseFloat(a.premium));
+}
+
 
         function getCurrencySymbol(country) {
             return { CHINA: '¥', HK: 'HK$', US: '$', MY: 'RM' }[country];
