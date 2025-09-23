@@ -66,6 +66,16 @@
             color: #888;
             margin-top: 6px;
         }
+
+/* 美化免责声明样式 */
+.disclaimer-text {
+  max-width: 800px;       /* 限制最大宽度 */
+  margin: 20px auto;      /* 上下 20px，左右自动居中 */
+  text-align: center;     /* 居中对齐 */
+  font-size: 0.9rem;      /* 字体稍微小一点 */
+  line-height: 1.6;       /* 行距拉开，更易读 */
+  color: #6c757d;         /* 柔和灰色，避免太抢眼 */
+}
     </style>
 </head>
 <body>
@@ -275,7 +285,7 @@
                 calculateButton: "计算并保存",
                 resultTitle: "计算结果：",
                 fairPrice: "合理股价：",
-                disclaimer: "免责声明：计算结果仅供参考，不构成投资建议",
+                disclaimer: "免责声明：本计算结果仅基于季度收入与净利润估算，未考虑公司净资产、现金流、股息率、行业前景、业务扩张、股权变动、宏观经济、竞争格局、管理层决策等可能影响估值与股价的因素，仅供参考，不构成投资建议。",
                 growthNote: "（已包含{value}%的预期成长调整）",
                 historyTitle: "保存记录",
                 marketColumn: "市场",
@@ -322,7 +332,7 @@
                 calculateButton: "Calculate & Save",
                 resultTitle: "Result: ",
                 fairPrice: "Fair Price: ",
-                disclaimer: "Disclaimer: Results are for reference only and do not constitute investment advice.",
+                disclaimer: "Disclaimer: This calculation result is based solely on quarterly revenue and net profit, without considering factors such as net assets, cash flow, dividend yield, industry outlook, business expansion, shareholding changes, macroeconomic conditions, competition, or management decisions that may affect valuation and stock prices. It is for reference only and does not constitute investment advice.",
                 growthNote: "(Applied {value}% growth adjustment)",
                 historyTitle: "History Records",
                 marketColumn: "Market",
@@ -621,6 +631,7 @@ history = sortByPremium(history);
         function deleteRecord(index) {
             if (!currentArchive) return;
             let history = JSON.parse(localStorage.getItem('archive_' + currentArchive) || '[]');
+history = sortByPremium(history);
             history.splice(index, 1);
             localStorage.setItem('archive_' + currentArchive, JSON.stringify(history));
             loadHistory();
@@ -720,8 +731,8 @@ history = sortByPremium(history);
     <img src="https://i.imgur.com/naIXUw2.png" alt="Logo" style="width:400px; height:auto; margin-right:-7rem;">
     <h2 style="font-size: 2.5rem; font-weight: 700; margin:0;">${translations[lang].title}</h2>
 </div>
-<div class="text-center mb-4">
-    <p class="text-muted small mb-0">${translations[lang].disclaimer}</p>
+<div class="disclaimer-text">
+    ${translations[lang].disclaimer}
 </div>
 <div class="text-center mb-4">
     <h3 style="font-size: 2rem; font-weight: 700; color:#2c3e50;">
@@ -772,9 +783,9 @@ history = sortByPremium(history);
                 ${translations[lang].title}
             </h2>
         </div>
-        <div class="text-center mb-2">
-            <p class="text-muted small mb-0">${translations[lang].disclaimer}</p>
-        </div>
+        <div class="disclaimer-text">
+    ${translations[lang].disclaimer}
+</div>
         <div class="text-center mb-4">
             <h3 style="font-size: 2rem; font-weight: 700; color:#2c3e50;">
                 ${currentArchive || translations[lang].archiveUntitled}
